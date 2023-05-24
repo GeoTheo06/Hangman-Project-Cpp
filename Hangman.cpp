@@ -59,6 +59,122 @@ void wonLonelyMode(int difficulty)
 	cout << endl << endl << endl << endl;
 }
 
+void lonely(int tries, int difficulty)
+{
+	srand(time(0));
+	string randomWord, currentWord;
+	vector<char> wrongLetters, usedLetters;
+	vector<char> nonValidCharacters{ '1','2','3','4','5','6','7','8','9','0','-','_','=','+','[',']','{', '}',';', ':', '\'', '\"', '`','~',',','<','.','>','/','?','\\','|' };
+
+	int randomNumber = (rand() % 300);
+	ifstream wordsFile;
+	if (difficulty == 3 || difficulty == 4)
+		wordsFile.open("difficult_words.doNotOpen");
+	else
+		wordsFile.open("words.doNotOpen");
+
+	for (int i = 0; i <= randomNumber; i++)
+	{
+		getline(wordsFile, randomWord);
+	}
+
+	//decrypting the word
+	for (int i = 0; i < randomWord.length(); i++)
+	{
+		randomWord[i] -= 1;
+		currentWord += '_';
+	}
+
+	char firstLetterOfRandomWord = randomWord[0];
+	randomWord[0] = '~';
+	currentWord[0] = '~'; //the first character is known so in "current word" (variable in which i check if the user's letters are correct) i change it into something the user will not use. if i let it as it was and the user tried to use it, the program would think that he found a correct character.
+
+	cout << "find the word by writing 1 character each time: " << endl;
+	for (int i = 0; i < randomWord.length(); i++)
+	{
+		if (i == 0)
+			cout << firstLetterOfRandomWord;
+		else
+			cout << currentWord[i];
+	}
+	cout << endl;
+
+	while (tries != 0)
+	{
+
+		cout << "Choose letter: ";
+		string input;
+		cin >> input;
+		char inputLetter = input[0];
+
+		if (find(nonValidCharacters.begin(), nonValidCharacters.end(), inputLetter) != nonValidCharacters.end())
+		{
+			cout << "this character is non-valid. Try something else" << endl;
+		}
+		else if (find(usedLetters.begin(), usedLetters.end(), inputLetter) != usedLetters.end())
+		{
+			cout << "You have tried this letter before, why don't you try something else?" << endl;
+		}
+		else if (find(randomWord.begin(), randomWord.end(), inputLetter) != randomWord.end())
+		{
+			cout << "Correct!" << endl;
+			usedLetters.push_back(inputLetter);
+
+			for (int i = 0; i < randomWord.length(); i++)
+			{
+				if (inputLetter == randomWord[i])
+					currentWord[i] = inputLetter;
+			}
+		}
+		else
+		{
+			cout << "Wrong!" << endl;
+			wrongLetters.push_back(inputLetter);
+			usedLetters.push_back(inputLetter);
+			tries--;
+		}
+
+		system("timeout 2 > nul");
+
+		cout << endl;
+		for (int i = 0; i < randomWord.length(); i++)
+		{
+			if (i == 0)
+				cout << firstLetterOfRandomWord;
+			else
+				cout << currentWord[i];
+		}
+
+		cout << endl << "Wrong Letters: ";
+
+		for (int i = 0; i < wrongLetters.size(); i++)
+		{
+			cout << wrongLetters[i];
+
+			if (i != wrongLetters.size() - 1)
+				cout << ", ";
+		}
+		cout << endl;
+
+		if (currentWord == randomWord)
+		{
+			wonLonelyMode(difficulty);
+			return;
+		}
+
+		if (tries == 1)
+			cout << "You have 1 try left" << endl;
+		else if (tries == 0)
+		{
+			randomWord[0] = firstLetterOfRandomWord;
+			cout << "You lost! The word was \"" << randomWord << "\"" << endl;
+		}
+		else
+			cout << "You have " << tries << " tries left" << endl;
+	}
+	wonLonelyMode(-1);
+}
+
 void nikh2(bool nikh, int arithmosPaiktwn, int seiraPaikth, int pontoiLekshs, int pontoiMeFilous)
 {
 
@@ -101,120 +217,6 @@ void nikh2(bool nikh, int arithmosPaiktwn, int seiraPaikth, int pontoiLekshs, in
 			}
 		}
 	}
-}
-
-void lonely(int tries, int difficulty)
-{
-	srand(time(0));
-	string randomWord, currentWord;
-	vector<char> wrongLetters, usedLetters;
-
-	int randomNumber = (rand() % 300);
-	ifstream wordsFile;
-	if (difficulty == 3 || difficulty == 4)
-		wordsFile.open("difficult_words.doNotOpen");
-	else
-		wordsFile.open("words.doNotOpen");
-
-	for (int i = 0; i <= randomNumber; i++)
-	{
-		getline(wordsFile, randomWord);
-	}
-
-	//decrypting the word
-	for (int i = 0; i < randomWord.length(); i++)
-	{
-		randomWord[i] -= 1;
-		currentWord += '_';
-	}
-	cout << randomWord; //todo DELETE AFTER TESTING
-
-	char firstLetterOfRandomWord = randomWord[0];
-	randomWord[0] = '~';
-	currentWord[0] = '~'; //the first character is known so in "current word" (variable in which i check if the user's letters are correct) i change it into something the user will not use. if i let it as it was and the user tried to use it, the program would think that he found a correct character.
-
-	cout << "find the word by writing 1 character each time: " << endl;
-	for (int i = 0; i < randomWord.length(); i++)
-	{
-		if (i == 0)
-			cout << firstLetterOfRandomWord;
-		else
-			cout << currentWord[i];
-	}
-	cout << endl;
-
-	while (tries != 0)
-	{
-
-		cout << "Choose letter: ";
-		string input;
-		cin >> input;
-		char inputLetter = input[0];
-
-		if (find(usedLetters.begin(), usedLetters.end(), inputLetter) != usedLetters.end())
-		{
-			cout << "You have tried this letter before, why don't you try something else?" << endl;
-		}
-		else if (find(randomWord.begin(), randomWord.end(), inputLetter) != randomWord.end())
-		{
-			cout << "Correct!" << endl;
-
-			for (int i = 0; i < randomWord.length(); i++)
-			{
-				if (inputLetter == randomWord[i])
-				{
-					currentWord[i] = inputLetter;
-				}
-			}
-		}
-		else
-		{
-			cout << "Wrong!" << endl;
-			wrongLetters.push_back(inputLetter);
-			tries--;
-		}
-
-		usedLetters.push_back(inputLetter);
-
-		system("timeout 2 > nul");
-
-		cout << endl;
-		for (int i = 0; i < randomWord.length(); i++)
-		{
-			if (i == 0)
-				cout << firstLetterOfRandomWord;
-			else
-				cout << currentWord[i];
-		}
-
-		cout << endl << "Wrong Letters: ";
-
-		for (int i = 0; i < wrongLetters.size(); i++)
-		{
-			cout << wrongLetters[i];
-
-			if (i != wrongLetters.size() - 1)
-				cout << ", ";
-		}
-		cout << endl;
-
-		if (currentWord == randomWord)
-		{
-			wonLonelyMode(difficulty);
-			return;
-		}
-
-		if (tries == 1)
-			cout << "You have 1 try left" << endl;
-		else if (tries == 0)
-		{
-			randomWord[0] = firstLetterOfRandomWord;
-			cout << "You lost! The word was \"" << randomWord << "\"" << endl;
-		}
-		else
-			cout << "You have " << tries << " tries left" << endl;
-	}
-	wonLonelyMode(-1);
 }
 
 void meFilo(int arithmosPaiktwn, int pontoiMeFilous, int pontoiSwsthsLekshs, int pontoiLathosLekshs, int prospatheies)
@@ -453,10 +455,10 @@ int main()
 	else if (choice == 2)
 	{
 		cout << "How many players are playing? ";
-		int arithmosPaiktwn;
-		cin >> arithmosPaiktwn;
+		int players;
+		cin >> players;
 
-		if (arithmosPaiktwn < 2 || arithmosPaiktwn > 100)
+		if (players < 2 || players > 50)
 		{
 			cout << "please enter a valid number";
 			exit(0);
