@@ -396,3 +396,7 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+/hangman.vcxproj.filters
+/hangman.vcxproj
+/CppProperties.json
+/hangman.sln

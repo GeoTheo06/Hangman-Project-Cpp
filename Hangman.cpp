@@ -10,63 +10,50 @@
 using namespace std;
 //comment the f-ing code
 
-int pontoi = 0;
 int pontoiPaiktwn[100] = {};
 int seiraPaikth1 = 0;
 
-void nikh1(int vathmoiDyskolias)
+void wonLonelyMode(int difficulty)
 {
-	if (vathmoiDyskolias != 0)
-	{
-		cout << endl << endl << "Bravo! You found the word!" << endl << "Because you completed the ";
-		if (vathmoiDyskolias == 1)
-		{
-			cout << "easy level, you get 1 point";
-			pontoi++;
-		}
-		else if (vathmoiDyskolias == 2)
-		{
-			cout << "medium level, you get 2 points";
-			pontoi += 2;
-		}
-		else if (vathmoiDyskolias == 3)
-		{
-			cout << "hard level, you get 3 points";
-			pontoi += 3;
-		}
-		else if (vathmoiDyskolias == 20)
-		{
-			cout << "impossible level, you get 20 points and you instantly...";
-			system("timeout 2 > nul");
-			pontoi += 20;
-		}
-	}
+	static int totalPoints;
+
+	if (difficulty == -1)
+		totalPoints--;
 	else
 	{
-		pontoi--;
+		cout << endl << endl << "Bravo! You found the word!" << endl << "Because you completed the ";
+		switch (difficulty)
+		{
+			case 1: cout << "easy"; break; case 2: cout << "medium"; break; case 3: cout << "hard"; break; case 4: cout << "impossible";
+		}
+
+		cout << " level, you get ";
+		if (difficulty == 4)
+		{
+			cout << "20 points and you win instantly";
+			system("timeout 2 > nul");
+			totalPoints += 20;
+		}
+		else
+		{
+			cout << difficulty << " points";
+			totalPoints += difficulty;
+		}
 	}
 
-	if (pontoi < 0)
-	{
-		pontoi = 0;
-	}
+	if (totalPoints < 0)
+		totalPoints = 0;
 
-	if (pontoi >= 20)
+	if (totalPoints >= 20)
 	{
 		cout << endl << "THE GAME IS OVER AND YOU WON! CONGRATULATIONS!";
+		system("pause > nul");
 		exit(0);
 	}
 	else
 	{
-		cout << endl << "You have " << pontoi;
-		if (pontoi == 1)
-		{
-			cout << " point";
-		}
-		else
-		{
-			cout << " points";
-		}
+		cout << endl << "You have " << totalPoints;
+		if (totalPoints == 1) cout << " point"; else cout << " points";
 		cout << " out of 20" << endl;
 	}
 	cout << endl << endl << endl << endl;
@@ -116,14 +103,19 @@ void nikh2(bool nikh, int arithmosPaiktwn, int seiraPaikth, int pontoiLekshs, in
 	}
 }
 
-void lonely1(int trials, int pointsForWin)
+void lonely(int tries, int difficulty)
 {
 	srand(time(0));
 	string randomWord, currentWord;
 	vector<char> wrongLetters, usedLetters;
 
 	int randomNumber = (rand() % 300);
-	ifstream wordsFile("words.doNotOpen");
+	ifstream wordsFile;
+	if (difficulty == 3 || difficulty == 4)
+		wordsFile.open("difficult_words.doNotOpen");
+	else
+		wordsFile.open("words.doNotOpen");
+
 	for (int i = 0; i <= randomNumber; i++)
 	{
 		getline(wordsFile, randomWord);
@@ -135,6 +127,7 @@ void lonely1(int trials, int pointsForWin)
 		randomWord[i] -= 1;
 		currentWord += '_';
 	}
+	cout << randomWord; //todo DELETE AFTER TESTING
 
 	char firstLetterOfRandomWord = randomWord[0];
 	randomWord[0] = '~';
@@ -150,7 +143,7 @@ void lonely1(int trials, int pointsForWin)
 	}
 	cout << endl;
 
-	while (trials != 0)
+	while (tries != 0)
 	{
 
 		cout << "Choose letter: ";
@@ -178,7 +171,7 @@ void lonely1(int trials, int pointsForWin)
 		{
 			cout << "Wrong!" << endl;
 			wrongLetters.push_back(inputLetter);
-			trials--;
+			tries--;
 		}
 
 		usedLetters.push_back(inputLetter);
@@ -207,164 +200,21 @@ void lonely1(int trials, int pointsForWin)
 
 		if (currentWord == randomWord)
 		{
-			nikh1(pointsForWin);
+			wonLonelyMode(difficulty);
 			return;
 		}
 
-		if (trials == 1)
+		if (tries == 1)
 			cout << "You have 1 try left" << endl;
-		else if (trials == 0)
+		else if (tries == 0)
 		{
 			randomWord[0] = firstLetterOfRandomWord;
 			cout << "You lost! The word was \"" << randomWord << "\"" << endl;
 		}
 		else
-			cout << "You have " << trials << " tries left" << endl;
+			cout << "You have " << tries << " tries left" << endl;
 	}
-	nikh1(0);
-}
-
-void lonely2(int arithmosProspatheiwn, int pontoiPouKerdise)
-{
-	srand(time(0));
-	string randomLeksh;
-	int prospatheies = arithmosProspatheiwn;
-	ifstream periexomenoArxeiou("difficult_words.doNotOpen");
-	int randomArithmos = (rand() % 253);
-	int lathosGrammataCounter = 0;
-
-	for (int i = 0; i <= randomArithmos; i++)
-	{
-		getline(periexomenoArxeiou, randomLeksh); //pairnw thn random leksh apo to arxeio me tis 253 lekseis
-	}
-
-	int textLength = randomLeksh.length(); //arithmos grammatwn ths random lekshs
-
-	char* randomLekshChar = new char[textLength];
-	char* randomLekshChar2 = new char[textLength];
-	char lathosGrammataXrhsth[24]{};
-
-	for (int i = 0; i < textLength; i++)
-	{
-		randomLeksh[i] -= 1; //apokryptografw th leksh
-	}
-
-	for (int i = 0; i < textLength; i++)
-	{
-		randomLekshChar[i] = randomLeksh[i]; //metatrepw th random leksh se char[]
-		randomLekshChar2[i] = randomLeksh[i];
-	}
-
-	char* lekshPouThaTypwthei = new char[textLength];
-	lekshPouThaTypwthei[0] = randomLekshChar[0];
-	randomLekshChar[0] = '~'; //auto to kanw se periptwsh pou o xrhsths eisagei enan xarakthra o opoios einai idios me auton tou prwtou grammatos ths tyxaias lekshs tha bgazei oti to petyxe swsta. Opote, egw metatrepw ton prwto xarakthra se enan xarakthhra ton opoio den tha eisagei gia na mhn yparxei problhma
-
-	cout << "Find the word by writing 1 character each time: " << endl;
-	for (int i = 1; i < textLength; i++)
-	{
-		lekshPouThaTypwthei[i] = '_';
-	}
-
-	for (int i = 0; i < textLength; i++)
-	{
-		cout << lekshPouThaTypwthei[i];
-	}
-	cout << endl;
-
-	while (prospatheies != 0)
-	{
-		cout << "Choose letter: ";
-		string keimenoXrhsth;
-		cin >> keimenoXrhsth;
-		char grammaXrhsth = keimenoXrhsth[0];
-
-		bool grammaCheck = false;
-		for (int i = 0; i < textLength; i++)
-		{
-			if (grammaXrhsth == randomLekshChar[i])
-			{
-				lekshPouThaTypwthei[i] = grammaXrhsth;
-				grammaCheck = true;
-			}
-		}
-		bool checkDoubleWrongInput = false;
-		for (int i = 0; i < lathosGrammataCounter; i++)
-		{
-			if (grammaXrhsth == lathosGrammataXrhsth[i])
-			{
-				checkDoubleWrongInput = true;
-			}
-		}
-
-		if (grammaCheck)
-		{
-			cout << "Correct!" << endl;
-		}
-		else if (checkDoubleWrongInput == true)
-		{
-			cout << "You have tried this letter before and it was wrong, why not try something else?" << endl;
-		}
-		else
-		{
-			cout << "Wrong!" << endl;
-			lathosGrammataXrhsth[lathosGrammataCounter] = grammaXrhsth;
-			lathosGrammataCounter++;
-			prospatheies--;
-		}
-		system("timeout 2 > nul");
-
-		cout << endl;
-		for (int i = 0; i < textLength; i++)
-		{
-			cout << lekshPouThaTypwthei[i];
-		}
-		cout << endl;
-		cout << "Wrong letters: ";
-		for (int i = 0; i < lathosGrammataCounter; i++)
-		{
-			cout << lathosGrammataXrhsth[i];
-			if (lathosGrammataCounter - 2 >= i)
-			{
-				cout << ", ";
-			}
-		}
-		cout << endl;
-
-		int swstaGrammataCounter = 0;
-		for (int i = 0; i < textLength; i++)
-		{
-			if (randomLekshChar2[i] == lekshPouThaTypwthei[i])
-			{
-				swstaGrammataCounter++;
-			}
-		}
-
-		if (swstaGrammataCounter == textLength)
-		{
-			nikh1(pontoiPouKerdise);
-			delete[] randomLekshChar;
-			delete[] lekshPouThaTypwthei;
-			delete[] randomLekshChar2;
-			return;
-		}
-
-		if (prospatheies == 1)
-		{
-			cout << "you still have " << prospatheies << " try left" << endl;
-		}
-		else if (prospatheies == 0)
-		{
-			cout << "You lost! The word was \"" << randomLeksh << "\"" << endl;
-		}
-		else
-		{
-			cout << "you still have " << prospatheies << " tries left" << endl;
-		}
-	}
-	delete[] randomLekshChar;
-	delete[] lekshPouThaTypwthei;
-	delete[] randomLekshChar2;
-	nikh1(0);
+	wonLonelyMode(-1);
 }
 
 void meFilo(int arithmosPaiktwn, int pontoiMeFilous, int pontoiSwsthsLekshs, int pontoiLathosLekshs, int prospatheies)
@@ -580,25 +430,23 @@ int main()
 		{
 			cout << endl << "Choose difficulty level: (1) easy | (2) medium | (3) hard | (4) impossible" << endl;
 			cin >> choice;
-			if (choice == 1)
+			switch (choice)
 			{
-				lonely1(9, 1);
-			}
-			else if (choice == 2)
-			{
-				lonely1(6, 2);
-			}
-			else if (choice == 3)
-			{
-				lonely2(4, 3);
-			}
-			else if (choice == 4)
-			{
-				lonely2(2, 20);
-			}
-			else
-			{
-				cout << "wrong choice";
+				case 1:
+					lonely(9, 1);
+					break;
+				case 2:
+					lonely(6, 2);
+					break;
+				case 3:
+					lonely(4, 3);
+					break;
+				case 4:
+					lonely(2, 4);
+					break;
+				default:
+					cout << "wrong choice";
+					break;
 			}
 		}
 	}
