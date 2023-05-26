@@ -21,16 +21,16 @@ void wonLonelyMode(int difficulty)
 		totalPoints--;
 	else
 	{
-		cout << endl << endl << "Bravo! You found the word!" << endl << "Because you completed the ";
+		cout << endl << endl << "Bravo! You've discovered the word!" << endl << "Since you completed the ";
 		switch (difficulty)
 		{
 			case 1: cout << "easy"; break; case 2: cout << "medium"; break; case 3: cout << "hard"; break; case 4: cout << "impossible";
 		}
 
-		cout << " level, you get ";
+		cout << " level, you earn ";
 		if (difficulty == 4)
 		{
-			cout << "20 points and you win instantly";
+			cout << "20 points, instantly winning the game.";
 			system("timeout 2 > nul");
 			totalPoints += 20;
 		}
@@ -46,15 +46,15 @@ void wonLonelyMode(int difficulty)
 
 	if (totalPoints >= 20)
 	{
-		cout << endl << "THE GAME IS OVER AND YOU WON! CONGRATULATIONS!";
+		cout << endl << "THE GAME IS OVER, AND YOU ARE VICTORIOUS! CONGRATULATIONS!";
 		system("pause > nul");
 		exit(0);
 	}
 	else
 	{
-		cout << endl << "You have " << totalPoints;
+		cout << endl << "You have accumulated " << totalPoints;
 		if (totalPoints == 1) cout << " point"; else cout << " points";
-		cout << " out of 20" << endl;
+		cout << " out of 20." << endl;
 	}
 	cout << endl << endl << endl << endl;
 }
@@ -62,9 +62,9 @@ void wonLonelyMode(int difficulty)
 void lonely(int tries, int difficulty)
 {
 	srand(time(0));
-	string randomWord, currentWord;
+	string randomWord, wordProgress;
 	vector<char> wrongLetters, usedLetters;
-	vector<char> nonValidCharacters{ '1','2','3','4','5','6','7','8','9','0','-','_','=','+','[',']','{', '}',';', ':', '\'', '\"', '`','~',',','<','.','>','/','?','\\','|' };
+	vector<char> invalidCharacters{ '1','2','3','4','5','6','7','8','9','0','-','_','=','+','[',']','{', '}',';', ':', '\'', '\"', '`','~',',','<','.','>','/','?','\\','|', ' ' };
 
 	int randomNumber = (rand() % 300);
 	ifstream wordsFile;
@@ -82,38 +82,38 @@ void lonely(int tries, int difficulty)
 	for (int i = 0; i < randomWord.length(); i++)
 	{
 		randomWord[i] -= 1;
-		currentWord += '_';
+		wordProgress += '_';
 	}
 
 	char firstLetterOfRandomWord = randomWord[0];
 	randomWord[0] = '~';
-	currentWord[0] = '~'; //the first character is known so in "current word" (variable in which i check if the user's letters are correct) i change it into something the user will not use. if i let it as it was and the user tried to use it, the program would think that he found a correct character.
+	wordProgress[0] = '~'; //the first character is known so in "current word" (variable in which i check if the user's letters are correct) i change it into something the user will not use. if i let it as it was and the user tried to use it, the program would think that he found a correct character.
 
-	cout << "find the word by writing 1 character each time: " << endl;
+	cout << "Word Progress: ";
 	for (int i = 0; i < randomWord.length(); i++)
 	{
 		if (i == 0)
 			cout << firstLetterOfRandomWord;
 		else
-			cout << currentWord[i];
+			cout << wordProgress[i];
 	}
 	cout << endl;
 
 	while (tries != 0)
 	{
 
-		cout << "Choose letter: ";
+		cout << "Enter a letter: ";
 		string input;
 		cin >> input;
 		char inputLetter = input[0];
 
-		if (find(nonValidCharacters.begin(), nonValidCharacters.end(), inputLetter) != nonValidCharacters.end())
+		if (find(invalidCharacters.begin(), invalidCharacters.end(), inputLetter) != invalidCharacters.end())
 		{
-			cout << "this character is non-valid. Try something else" << endl;
+			cout << "This character is invalid. Please try something else." << endl;
 		}
 		else if (find(usedLetters.begin(), usedLetters.end(), inputLetter) != usedLetters.end())
 		{
-			cout << "You have tried this letter before, why don't you try something else?" << endl;
+			cout << "You have already tried this letter. Why don't you attempt a different one?" << endl;
 		}
 		else if (find(randomWord.begin(), randomWord.end(), inputLetter) != randomWord.end())
 		{
@@ -123,12 +123,12 @@ void lonely(int tries, int difficulty)
 			for (int i = 0; i < randomWord.length(); i++)
 			{
 				if (inputLetter == randomWord[i])
-					currentWord[i] = inputLetter;
+					wordProgress[i] = inputLetter;
 			}
 		}
 		else
 		{
-			cout << "Wrong!" << endl;
+			cout << "Incorrect!" << endl;
 			wrongLetters.push_back(inputLetter);
 			usedLetters.push_back(inputLetter);
 			tries--;
@@ -142,10 +142,10 @@ void lonely(int tries, int difficulty)
 			if (i == 0)
 				cout << firstLetterOfRandomWord;
 			else
-				cout << currentWord[i];
+				cout << wordProgress[i];
 		}
 
-		cout << endl << "Wrong Letters: ";
+		cout << endl << "Incorrect Letters: ";
 
 		for (int i = 0; i < wrongLetters.size(); i++)
 		{
@@ -156,21 +156,21 @@ void lonely(int tries, int difficulty)
 		}
 		cout << endl;
 
-		if (currentWord == randomWord)
+		if (wordProgress == randomWord)
 		{
 			wonLonelyMode(difficulty);
 			return;
 		}
 
 		if (tries == 1)
-			cout << "You have 1 try left" << endl;
+			cout << "You have 1 attempt remaining." << endl;
 		else if (tries == 0)
 		{
 			randomWord[0] = firstLetterOfRandomWord;
 			cout << "You lost! The word was \"" << randomWord << "\"" << endl;
 		}
 		else
-			cout << "You have " << tries << " tries left" << endl;
+			cout << "You have " << tries << " attempts remaining" << endl;
 	}
 	wonLonelyMode(-1);
 }
@@ -220,8 +220,7 @@ void nikh2(bool nikh, int arithmosPaiktwn, int seiraPaikth, int pontoiLekshs, in
 }
 
 void meFilo(int arithmosPaiktwn, int pontoiMeFilous, int pontoiSwsthsLekshs, int pontoiLathosLekshs, int prospatheies)
-{
-	cout << "players (p) and points (v): " << endl;
+{ //handle space bar
 	int* paiktes = new int[arithmosPaiktwn + 1]
 	{};
 	int paiktesCounter = 0;
@@ -229,8 +228,8 @@ void meFilo(int arithmosPaiktwn, int pontoiMeFilous, int pontoiSwsthsLekshs, int
 	{
 		paiktesCounter += 1;
 		paiktes[i] = paiktesCounter;
-		cout << "p: " << paiktes[i];
-		cout << " v: " << pontoiPaiktwn[i];
+		cout << "Player " << paiktes[i];
+		cout << " has " << pontoiPaiktwn[i] << " points";
 		if (arithmosPaiktwn - 1 > i)
 		{
 			cout << ", " << endl;
@@ -242,25 +241,20 @@ void meFilo(int arithmosPaiktwn, int pontoiMeFilous, int pontoiSwsthsLekshs, int
 		if (pontoiPaiktwn[i] >= pontoiMeFilous)
 		{
 			cout << endl << "Congratulations! Player " << i + 1 << " won";
-			exit(0);
+			break;
 		}
 	}
 
 	seiraPaikth1 += 1;
 	if (seiraPaikth1 > arithmosPaiktwn)
-	{
 		seiraPaikth1 = 1;
-	}
 
-	cout << endl << endl << "Now playing player " << seiraPaikth1 << ". Try a hard-to-find word";
+	cout << endl << endl << "Now it's" << seiraPaikth1 << "'s turn. Choose a challenging word to make it harder for your ";
 	if (arithmosPaiktwn > 2)
-	{
-		cout << " so that your opponents cannot find it easily: ";
-	}
+		cout << "opponents to guess: ";
 	else if (arithmosPaiktwn == 2)
-	{
-		cout << " so that your opponent cannot find it easily: ";
-	}
+		cout << "opponent to guess: ";
+
 	string lekshXrhsth = "";
 	char ch;
 
@@ -302,7 +296,7 @@ void meFilo(int arithmosPaiktwn, int pontoiMeFilous, int pontoiSwsthsLekshs, int
 	lekshPouThaTypwthei[0] = randomLekshChar[0];
 	randomLekshChar[0] = '~';
 
-	cout << "find the word, by typing 1 letters each time: " << endl;
+	cout << "Find the word by entering one letter at a time: " << endl << "Word progress: ";
 
 	for (int i = 1; i < textLength; i++)
 	{
@@ -318,7 +312,7 @@ void meFilo(int arithmosPaiktwn, int pontoiMeFilous, int pontoiSwsthsLekshs, int
 	while (prospatheies != 0)
 	{
 
-		cout << "Choose letter: ";
+		cout << "Enter a letter: ";
 
 		string keimenoXrhsth;
 		cin >> keimenoXrhsth;
@@ -367,7 +361,7 @@ void meFilo(int arithmosPaiktwn, int pontoiMeFilous, int pontoiSwsthsLekshs, int
 			cout << lekshPouThaTypwthei[i];
 		}
 		cout << endl;
-		cout << "Wrong letters: ";
+		cout << "Incorrect letters: ";
 		for (int i = 0; i < lathosGrammataCounter; i++)
 		{
 			cout << lathosGrammataXrhsth[i];
@@ -393,7 +387,7 @@ void meFilo(int arithmosPaiktwn, int pontoiMeFilous, int pontoiSwsthsLekshs, int
 		if (prospatheies == 1)
 		{
 
-			cout << "You still have " << prospatheies << " try left" << endl;
+			cout << "You have " << prospatheies << " attempt remaining" << endl;
 
 		}
 		else if (prospatheies == 0)
@@ -406,7 +400,7 @@ void meFilo(int arithmosPaiktwn, int pontoiMeFilous, int pontoiSwsthsLekshs, int
 		{
 			if (arithmosPaiktwn == 2)
 			{
-				cout << "You still have " << prospatheies << " tries left" << endl;
+				cout << "You have " << prospatheies << " attempts remaining" << endl;
 			}
 		}
 	}
@@ -419,80 +413,84 @@ void meFilo(int arithmosPaiktwn, int pontoiMeFilous, int pontoiSwsthsLekshs, int
 
 int main()
 {
-	cout << "                Hangman" << endl;
-	cout << "-------------------------------------------" << endl;
-	cout << "\"I-don't-have-friends option\" (1)" << endl;
-	cout << "play with friend(s) (2)" << endl;
-	int choice;
-	cin >> choice;
-	if (choice == 1)
+	while (true)
 	{
-		cout << "You need 20 points to win. " << endl << "You get 1 point by winning the easy level, 2 points by winning the medium level and 3 points by winning the hard level. By winning the impossible level, you get 20 points so you win instantly. By losing in any level, you lose 1 point." << endl;
-		while (true)
+		cout << "                Hangman" << endl;
+		cout << "-------------------------------------------" << endl;
+		cout << "The objective is to discover the word by entering one letter at a time. Each correct guess earns you points. The game concludes when a player accumulates a specific number of points." << endl;
+		cout << "\"Solo Play (I-don't-have-friends)\" (1)" << endl;
+		cout << "Play with Friends (2)" << endl;
+		int choice;
+		cin >> choice;
+		if (choice == 1)
 		{
-			cout << endl << "Choose difficulty level: (1) easy | (2) medium | (3) hard | (4) impossible" << endl;
-			cin >> choice;
-			switch (choice)
+			cout << "You need 20 points to win. " << endl << "Winning the easy level grants you 1 point, the medium level awards 2 points, and the hard level grants 3 points. If you manage to conquer the impossible level, you instantly receive 20 points and win the game. Losing at any level deducts 1 point." << endl;
+			while (true)
 			{
-				case 1:
-					lonely(9, 1);
-					break;
-				case 2:
-					lonely(6, 2);
-					break;
-				case 3:
-					lonely(4, 3);
-					break;
-				case 4:
-					lonely(2, 4);
-					break;
-				default:
-					cout << "wrong choice";
-					break;
+				cout << endl << "Choose the difficulty level: (1) easy | (2) medium | (3) hard | (4) impossible" << endl;
+				cin >> choice;
+				switch (choice)
+				{
+					case 1:
+						lonely(9, 1);
+						break;
+					case 2:
+						lonely(6, 2);
+						break;
+					case 3:
+						lonely(4, 3);
+						break;
+					case 4:
+						lonely(2, 4);
+						break;
+					default:
+						cout << "Incorrect choice!";
+						break;
+				}
 			}
 		}
-	}
-	else if (choice == 2)
-	{
-		cout << "How many players are playing? ";
-		int players;
-		cin >> players;
+		else if (choice == 2)
+		{//handle space bar input
+			while (true)
+			{
+				cout << "How many players are playing? ";
+				int players;
+				cin >> players;
 
-		if (players < 2 || players > 50)
-		{
-			cout << "please enter a valid number";
-			exit(0);
+				if (players < 2 || players > 50)
+					cout << "please enter a valid number";
+
+				cout << "What's the target score to end the game? ";
+				int pontoiMeFilous;
+				cin >> pontoiMeFilous;
+
+				cout << "How many points are awarded for each correct word completion? ";
+				int pontoiSwsthsLekshs;
+				cin >> pontoiSwsthsLekshs;
+
+				cout << "How many points are deducted for each incorrect guess? ";
+				int pontoiLathosLekshs;
+				cin >> pontoiLathosLekshs;
+
+				cout << "How many attempts does each player have for each word? (Usually 6)";
+				int prospatheies = 0;
+				cin >> prospatheies;
+
+				for (int i = 0; i < 100; i++)
+				{
+					pontoiPaiktwn[i] = 0;
+				}
+
+				cout << endl;
+				while (true)
+				{
+					meFilo(players, pontoiMeFilous, pontoiSwsthsLekshs, pontoiLathosLekshs, prospatheies);
+				}
+			}
 		}
-
-		cout << "How many points do you want the game to end at? ";
-		int pontoiMeFilous;
-		cin >> pontoiMeFilous;
-
-		cout << "How many points do you want to get for every correct word? ";
-		int pontoiSwsthsLekshs;
-		cin >> pontoiSwsthsLekshs;
-
-		cout << "How many points do you want to lose for every wrong word? ";
-		int pontoiLathosLekshs;
-		cin >> pontoiLathosLekshs;
-
-		cout << "How many tries do you want each player to have? (usual is 6)";
-		int prospatheies = 0;
-		cin >> prospatheies;
-
-		for (int i = 0; i < 100; i++)
+		else
 		{
-			pontoiPaiktwn[i] = 0;
+			cout << "Incorrect choice!";
 		}
-
-		cout << endl;
-		while (true)
-		{
-			meFilo(arithmosPaiktwn, pontoiMeFilous, pontoiSwsthsLekshs, pontoiLathosLekshs, prospatheies);
-		}
-	}
-	else
-	{
-		cout << "wrong choice!";
 	}
 }
