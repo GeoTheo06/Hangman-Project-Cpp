@@ -59,9 +59,8 @@ void wonLonelyMode(int difficulty)
 void lonely(int tries, int difficulty)
 {
 	srand(time(0));
-	string randomWord, wordProgress;
+	string word, wordProgress;
 	vector<char> wrongLetters, usedLetters;
-	vector<char> invalidCharacters{ '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '_', '=', '+', '[', ']', '{', '}', ';', ':', '\'', '\"', '`', '~', ',', '<', '.', '>', '/', '?', '\\', '|', ' ' };
 
 	int randomNumber = (rand() % 300);
 	ifstream wordsFile;
@@ -72,25 +71,25 @@ void lonely(int tries, int difficulty)
 
 	for (int i = 0; i <= randomNumber; i++)
 	{
-		getline(wordsFile, randomWord);
+		getline(wordsFile, word);
 	}
 
 	//decrypting the word
-	for (int i = 0; i < randomWord.length(); i++)
+	for (int i = 0; i < word.length(); i++)
 	{
-		randomWord[i] -= 1;
+		word[i] -= 1;
 		wordProgress += '_';
 	}
 
-	char firstLetterOfRandomWord = randomWord[0];
-	randomWord[0] = '~';
+	char firstLetter = word[0];
+	word[0] = '~';
 	wordProgress[0] = '~'; //the first character is known so in "current word" (variable in which i check if the user's letters are correct) i change it into something the user will not use. if i let it as it was and the user tried to use it, the program would think that he found a correct character.
 
 	cout << "Word Progress: ";
-	for (int i = 0; i < randomWord.length(); i++)
+	for (int i = 0; i < word.length(); i++)
 	{
 		if (i == 0)
-			cout << firstLetterOfRandomWord;
+			cout << firstLetter;
 		else
 			cout << wordProgress[i];
 	}
@@ -104,7 +103,7 @@ void lonely(int tries, int difficulty)
 		cin >> input;
 		char inputLetter = input[0];
 
-		if (find(invalidCharacters.begin(), invalidCharacters.end(), inputLetter) != invalidCharacters.end())
+		if (inputLetter > 122 || inputLetter < 97) //out of bounds (check ascii table)
 		{
 			cout << "This character is invalid. Please try something else." << endl;
 		}
@@ -112,14 +111,14 @@ void lonely(int tries, int difficulty)
 		{
 			cout << "You have already tried this letter. Why don't you attempt a different one?" << endl;
 		}
-		else if (find(randomWord.begin(), randomWord.end(), inputLetter) != randomWord.end())
+		else if (find(word.begin(), word.end(), inputLetter) != word.end())
 		{
 			cout << "Correct!" << endl;
 			usedLetters.push_back(inputLetter);
 
-			for (int i = 0; i < randomWord.length(); i++)
+			for (int i = 0; i < word.length(); i++)
 			{
-				if (inputLetter == randomWord[i])
+				if (inputLetter == word[i])
 					wordProgress[i] = inputLetter;
 			}
 		}
@@ -134,10 +133,10 @@ void lonely(int tries, int difficulty)
 		system("timeout 2 > nul");
 
 		cout << endl;
-		for (int i = 0; i < randomWord.length(); i++)
+		for (int i = 0; i < word.length(); i++)
 		{
 			if (i == 0)
-				cout << firstLetterOfRandomWord;
+				cout << firstLetter;
 			else
 				cout << wordProgress[i];
 		}
@@ -153,7 +152,7 @@ void lonely(int tries, int difficulty)
 		}
 		cout << endl;
 
-		if (wordProgress == randomWord)
+		if (wordProgress == word)
 		{
 			wonLonelyMode(difficulty);
 			return;
@@ -163,8 +162,8 @@ void lonely(int tries, int difficulty)
 			cout << "You have 1 attempt remaining." << endl;
 		else if (tries == 0)
 		{
-			randomWord[0] = firstLetterOfRandomWord;
-			cout << "You lost! The word was \"" << randomWord << "\"" << endl;
+			word[0] = firstLetter;
+			cout << "You lost! The word was \"" << word << "\"" << endl;
 		}
 		else
 			cout << "You have " << tries << " attempts remaining" << endl;
@@ -222,13 +221,13 @@ void nikh2(bool nikh, int arithmosPaiktwn, int seiraPaikth, int pontoiLekshs, in
 void meFilo(int playerCount, int targetScore, int pointsPerLetter, int penaltyPoints, int tries, vector<int>& players, vector<int>& WordChoosers)
 {
 	srand(time(0));
-	//todo vale na mhn mporoyn na valoun perierges times ws leksh
 	//todo otan kapoios vriskei gramma paizei ksana kai mono aftos pou vrei to teleftaio gramma pairnei ponto parolo pou synolika exoun sygkekrimeno arithmo prospatheiwn (einai dikaio epeidh o kathenas mporei na xasei mono mia fora ana gyro)
-	//todo h seira tou paikth apofasizetai tyxaia kathe fora (aftoi pou epaiksan afto to round tha apothikevontai sto playersPlayed (to eftiaksa twra). mhn ksexaseis na to adeiaseis otan vrethei h leksh)
-	//todo vale orio na mhn mporoun na valoun ligotero apo 2 grammata ana leksh
-	//todo kane na mhn mporoun na valoun perierges times (katw apo 1, synolikoi pointoi na mhn einai ligorteroi apo toys pontous pou kerdizoun gia kathe leksh)
+	//todo h seira tou paikth apofasizetai tyxaia kathe fora (aftoi pou epaiksan afto to round tha apothikevontai sto playersPlayed. mhn ksexaseis na to adeiaseis otan vrethei h leksh)
 	//todo aftos pou vazei leksh xanei pontous an thn vroun
+	//todo vale na psifizoun oloi oi paiktes an h leksh pou evale o wordChooser einai valid
 
+	string word, wordProgress;
+	vector<char> wrongLetters, usedLetters;
 
 	for (int i = 0; i < playerCount; i++)
 	{
@@ -256,67 +255,69 @@ void meFilo(int playerCount, int targetScore, int pointsPerLetter, int penaltyPo
 	else if (playerCount == 2)
 		cout << "opponent to guess: ";
 
-	string word = "";
-	char ch;
 
-	ch = _getch();
-	while (ch == _getch())
+	char tempCharacter;
+	bool invalidCharacterTemp;
+	do
 	{
-		if (ch == 13) //ENTER
+		invalidCharacterTemp = false;
+		word = "";
+
+		while (tempCharacter = _getch())
 		{
-			break;
-		}
-		else if (ch == 8) //BACKSPACE
-		{
-			if (word.length() > 0)
+			if (tempCharacter == 13) //ENTER
+				break;
+			else if (tempCharacter == 8) //BACKSPACE
 			{
-				cout << "\b \b";
+				if (word.length() > 0)
+				{
+					cout << "\b \b";
+					word.erase(word.length() - 1);
+				}
+			}
+			else
+			{
+				cout << "*";
+				word += tempCharacter;
 			}
 		}
-		else
+		if (word.length() < 3)
+			cout << "word must have more than or equal to 3 characters.";
+		for (int i = 0; i < word.length() - 1; i++)
 		{
-			cout << "*";
-			lekshXrhsth += ch;
+			if (word[i] > 122 || word[i] < 97)
+			{
+				cout << "word cannot contain numbers, symbols or uppercase letters.";
+				invalidCharacterTemp = true;
+			}
 		}
-	}
+
+	} while (word.length() < 3 || invalidCharacterTemp);
 	cout << endl;
 
-	int textLength = lekshXrhsth.length();
-	char* randomLekshChar = new char[textLength];
-	string randomLeksh = lekshXrhsth;
-	int lathosGrammataCounter = 0;
-	char* lathosGrammataXrhsth = new char[prospatheies + 1];
-
-	for (int i = 0; i < textLength; i++)
-	{
-		randomLekshChar[i] = randomLeksh[i]; //metatrepw th random leksh se char[]
-	}
-
-	char* lekshPouThaTypwthei = new char[textLength];
-	lekshPouThaTypwthei[0] = randomLekshChar[0];
-	randomLekshChar[0] = '~';
+	char firstLetter = word[0];
+	word[0] = '~';
+	wordProgress[0] = '~';
 
 	cout << "Word progress: ";
 
-	for (int i = 1; i < textLength; i++)
+	for (int i = 0; i < word.length(); i++)
 	{
-		lekshPouThaTypwthei[i] = '_';
-	}
-
-	for (int i = 0; i < textLength; i++)
-	{
-		cout << lekshPouThaTypwthei[i];
+		if (i == 0)
+			cout << firstLetter;
+		else
+			cout << wordProgress[i];
 	}
 	cout << endl;
 
-	while (prospatheies != 0)
+	while (tries != 0)
 	{
-
+		//todo CONTINUE FROM HERE
 		cout << "Enter a letter: ";
 
-		string keimenoXrhsth;
-		cin >> keimenoXrhsth;
-		char grammaXrhsth = keimenoXrhsth[0];
+		string input;
+		cin >> input;
+		char inputLetter = input[0];
 
 		bool grammaCheck = false;
 		for (int i = 0; i < textLength; i++)
