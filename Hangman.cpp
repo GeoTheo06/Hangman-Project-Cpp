@@ -171,7 +171,7 @@ void lonely(int tries, int difficulty)
 	wonLonelyMode(-1);
 }
 
-void multiplayer(int playerCount, int targetScore, int pointsPerLetter, int penaltyPoints, int wordChooserRewardPoints, int tries1, vector<int>& players, vector<int>& WordChoosers)
+void multiplayer(int playerCount, float targetScore, float pointsPerLetter, float penaltyPoints, int tries1, vector<int>& players, vector<int>& WordChoosers)
 {
 	srand(time(0));
 
@@ -183,7 +183,7 @@ void multiplayer(int playerCount, int targetScore, int pointsPerLetter, int pena
 	{
 		if (players[i] >= targetScore)
 		{
-			cout << endl << "THE GAME IS OVER, AND YOU ARE VICTORIOUS! PLAYER " << players[i] << " CONGRATULATIONS!";
+			cout << endl << "THE GAME IS OVER, AND YOU ARE VICTORIOUS! CONGRATULATIONS, PLAYER " << i + 1 << "!";
 			system("pause > nul");
 			exit(0);
 		}
@@ -193,13 +193,15 @@ void multiplayer(int playerCount, int targetScore, int pointsPerLetter, int pena
 	if (WordChoosers.size() == players.size())
 		WordChoosers.clear();
 
-	int temp = playerCount - 1;
+	int temp;
 	do
 	{
-		WordChoosers.push_back(rand() % temp);
+		temp = rand() % playerCount + 1;
 	} while (find(WordChoosers.begin(), WordChoosers.end(), temp) != WordChoosers.end());
 
-	cout << endl << endl << "Now it's" << WordChoosers.back() << "'s turn. Choose a challenging word to make it harder for your ";
+	WordChoosers.push_back(temp);
+
+	cout << endl << endl << "Now it's player " << WordChoosers.back() << "'s turn. Choose a challenging word to make it harder for your ";
 	if (playerCount > 2)
 		cout << "opponents to guess: ";
 	else if (playerCount == 2)
@@ -232,23 +234,26 @@ void multiplayer(int playerCount, int targetScore, int pointsPerLetter, int pena
 			}
 		}
 		if (word.length() < 3)
-			cout << "word must have more than or equal to 3 characters.";
-		for (int i = 0; i < word.length() - 1; i++)
+			cout << endl << "The word must have at least 3 characters.";
+		for (int i = 0; i < word.length(); i++)
 		{
 			if (word[i] > 122 || word[i] < 97)
 			{
-				cout << "word cannot contain numbers, symbols or uppercase letters.";
+				cout << endl << "word should not contain numbers, symbols, spaces, or uppercase letters.";
 				invalidCharacterTemp = true;
 			}
 		}
-
 	} while (word.length() < 3 || invalidCharacterTemp);
 	cout << endl;
 
-
 	char firstLetter = word[0];
 	word[0] = '~';
+
 	wordProgress[0] = '~';
+	for (int i = 0; i < word.length(); i++)
+	{
+		wordProgress += '_';
+	}
 
 	cout << "Word progress: ";
 	for (int i = 0; i < word.length(); i++)
@@ -267,37 +272,38 @@ void multiplayer(int playerCount, int targetScore, int pointsPerLetter, int pena
 	int tempNumber;
 	while (true)
 	{
-		if (playersPlayed.size() == players.size())
-			playersPlayed.clear();
 
 		if (!playingAgain)
 		{
+			if (playersPlayed.size() == players.size() - 1) //players.size() - 1 because i don't count the word chooser as a player.
+				playersPlayed.clear();
 			do
 			{
+
 				tempNumber = rand() % playerCount + 1;
-			} while (find(playersPlayed.begin(), playersPlayed.end(), tempNumber) != playersPlayed.end());
+			} while ((find(playersPlayed.begin(), playersPlayed.end(), tempNumber) != playersPlayed.end()) || tempNumber == WordChoosers.back());
 
 			playersPlayed.push_back(tempNumber);
 		}
 
 		do
 		{
-			cout << "Player " << playersPlayed.back() << "is now playing: Please enter a letter : ";
+			cout << "Player " << playersPlayed.back() << " is now playing. Please enter a letter: ";
 			cin >> input;
 			inputLetter = input[0];
 
-			if (inputLetter > 122 || inputLetter < 97) //out of bounds (check ascii table)
-				cout << "This character is invalid. Please try something else." << endl;
+			if (inputLetter < 97 || inputLetter > 122) //out of bounds (check ascii table)
+				cout << endl << "This character is invalid. Please try something else." << endl;
 
 			else if (find(usedLetters.begin(), usedLetters.end(), inputLetter) != usedLetters.end())
-				cout << "This letter has been  tried before. Why don't you attempt a different one?" << endl;
+				cout << endl << "This letter has been tried before. Why don't you attempt a different one?" << endl;
 
-		} while (inputLetter <= 122 || inputLetter >= 97 || find(usedLetters.begin(), usedLetters.end(), inputLetter) == usedLetters.end());
+		} while (inputLetter < 97 || inputLetter > 122 || find(usedLetters.begin(), usedLetters.end(), inputLetter) != usedLetters.end());
 
 		if (find(word.begin(), word.end(), inputLetter) != word.end())
 		{
-			cout << "Correct! You get +" << pointsPerLetter << "points!" << endl;
-			players[playersPlayed.back()] += pointsPerLetter;
+			cout << "Correct! You earn " << pointsPerLetter << " points!" << endl << endl;
+			players[playersPlayed.back() - 1] += pointsPerLetter;
 			usedLetters.push_back(inputLetter);
 			playingAgain = true;
 			for (int i = 0; i < word.length(); i++)
@@ -308,8 +314,17 @@ void multiplayer(int playerCount, int targetScore, int pointsPerLetter, int pena
 		}
 		else
 		{
-			cout << "Incorrect! You lose" << penaltyPoints << "points." << endl;
-			players[playersPlayed.back()] -= penaltyPoints;
+			if (players[playersPlayed.back() - 1] == 0)
+				cout << "Incorrect!";
+			else
+			{
+				if (penaltyPoints == 1)
+					cout << "Incorrect! You lose 1 point." << endl << endl;
+				else
+					cout << "Incorrect! You lose " << penaltyPoints << " points." << endl << endl;
+
+				players[playersPlayed.back() - 1] -= penaltyPoints;
+			}
 			playingAgain = false;
 			wrongLetters.push_back(inputLetter);
 			usedLetters.push_back(inputLetter);
@@ -340,38 +355,40 @@ void multiplayer(int playerCount, int targetScore, int pointsPerLetter, int pena
 
 		for (int i = 0; i < playerCount; i++)
 		{
-			cout << "Player " << i + 1 << " has " << players[i] << " points" << endl;
+			cout << "Player " << i + 1 << ": " << players[i] << " points" << endl;
 		}
-		//todo CONTINUE FROM HERE
+		cout << endl;
+
+		wordProgress[0] = word[0];
 		if (wordProgress == word)
 		{
-			cout << "Congratulations! Player " << playersPlayed.back() << " found the word!" << endl << "You get +" << pointsPerLetter;
-			players[playersPlayed.back()] += pointsPerLetter;
-			multiplayer(playerCount, targetScore, pointsPerLetter, penaltyPoints, tries, wordChooserRewardPoints, players, WordChoosers);
+			cout << "Congratulations! Player " << playersPlayed.back() << " has found the word!" << endl << "You earn " << pointsPerLetter << endl;
+			players[playersPlayed.back() - 1] += pointsPerLetter;
+			multiplayer(playerCount, targetScore, pointsPerLetter, penaltyPoints, tries, players, WordChoosers);
 		}
+		wordProgress[0] = '~';
 
 		if (tries == 0)
 		{
 			word[0] = firstLetter;
-			cout << "You are out of tries so, you lost! The word was \"" << word << "\"" << endl;
-			cout << " player " << WordChoosers.back() << "wins! Congratulations! You get +" << wordChooserRewardPoints << "points!";
-			players[WordChoosers.back()] += wordChooserRewardPoints;
-			multiplayer(playerCount, targetScore, pointsPerLetter, penaltyPoints, tries, wordChooserRewardPoints, players, WordChoosers);
+			cout << "The guessing team is out of tries, so you lose! The word was \"" << word << "\"" << endl;
+			cout << "player " << WordChoosers.back() << " Player 5 is the winner! Congratulations! You earn " << word.length() << " points!";
+			players[WordChoosers.back() - 1] += word.length();
+			multiplayer(playerCount, targetScore, pointsPerLetter, penaltyPoints, tries, players, WordChoosers);
 		}
 		else if (tries == 1)
-			cout << "You have 1 attempt remaining." << endl;
+			cout << "The guessing team has 1 attempt remaining." << endl << endl;
 		else
-			cout << "You have " << tries << " attempts remaining" << endl;
+			cout << "The guessing team has " << tries << " attempts remaining." << endl << endl;
 	}
 }
 int main()
 {
-//todo vale na exei default options gia multiplayer (otan patane "d")
 	while (true)
 	{
 		cout << "                Hangman" << endl;
 		cout << "-------------------------------------------" << endl;
-		cout << "The objective is to discover the word by entering one letter at a time. Each correct guess earns you points. The game concludes when a player accumulates a specific number of points." << endl;
+		cout << "The objective of the game is to find the word by entering one letter at a time until a specific number of points is reached." << endl;
 		cout << "\"Solo Play (I-don't-have-friends)\" (1)" << endl;
 		cout << "Play with Friends (2)" << endl;
 		int choice;
@@ -398,16 +415,17 @@ int main()
 						lonely(2, 4);
 						break;
 					default:
-						cout << "Incorrect choice!" << endl;
+						cout << endl << "Incorrect choice!" << endl;
 						break;
 				}
 			}
 		}
 		else if (choice == 2)
 		{
+			cout << endl << "Each round, one player becomes the word chooser, while the others act as players. The aim is to uncover the word by making correct letter guesses. Points are awarded for each successful guess. The game concludes when a player accumulates the predetermined number of points. The word chooser earns points equal to the number of letters in their word if they win." << endl << endl;
 			vector<int> players, wordChoosers;
 			int playerCount, tries = 0;
-			float penaltyPoints, pointsPerLetter, totalScore, wordChooserRewardPoints;
+			float penaltyPoints, pointsPerLetter, totalScore;
 			string tempString;
 			while (true)
 			{
@@ -417,7 +435,7 @@ int main()
 					cin >> playerCount;
 
 					if (playerCount < 2 || playerCount > 10)
-						cout << "Players must be more than or equal to 2 and less than or equal to 10" << endl;
+						cout << endl << "The number of players must be between 2 and 10 (inclusive)." << endl;
 
 				} while (playerCount < 2 || playerCount > 10);
 
@@ -429,12 +447,15 @@ int main()
 						cin >> tempString;
 
 						if (tempString == "d")
+						{
 							pointsPerLetter = 2;
+							cout << "using 2" << endl;
+						}
 						else
 							pointsPerLetter = stof(tempString);
 
 						if (pointsPerLetter <= 0)
-							cout << "points for correct guesses cannot be 0 or lower." << endl;
+							cout << endl << "Points awarded for correct guesses cannot be 0 or lower." << endl;
 
 					} while (pointsPerLetter <= 0);
 
@@ -444,12 +465,15 @@ int main()
 						cin >> tempString;
 
 						if (tempString == "d")
+						{
 							penaltyPoints = 1;
+							cout << "using 1" << endl;
+						}
 						else
 							penaltyPoints = stof(tempString);
 
 						if (penaltyPoints <= 0)
-							cout << "points for incorrect guesses cannot be 0 or lower." << endl;
+							cout << endl << "points for incorrect guesses cannot be 0 or lower." << endl;
 
 					} while (penaltyPoints <= 0);
 
@@ -457,28 +481,17 @@ int main()
 					cin >> tempString;
 
 					if (tempString == "d")
+					{
 						totalScore = 20;
+						cout << "using 20" << endl;
+					}
 					else
 						totalScore = stof(tempString);
 
 					if (totalScore < pointsPerLetter || totalScore < penaltyPoints)
-						cout << "The total score points cannot be lower than the points awarded for each correct letter or the penalty points deducted for incorrect guesses." << endl;
+						cout << endl << "The total score cannot be lower than the points awarded for each correct letter or the penalty points deducted for incorrect guesses." << endl;
 
 				} while (totalScore < pointsPerLetter || totalScore < penaltyPoints);
-
-				do
-				{
-					cout << "How many points should be assigned to a word chooser who wins? (Enter 'd' to use default)" << endl;
-					cin >> tempString;
-
-					if (tempString == "d")
-						wordChooserRewardPoints = 4;
-					else
-						wordChooserRewardPoints = stof(tempString);
-
-					if (wordChooserRewardPoints <= 0)
-						cout << "word chooser reward points should not be 0 or lower." << endl;
-				} while (wordChooserRewardPoints <= 0);
 
 				do
 				{
@@ -486,13 +499,16 @@ int main()
 					cin >> tempString;
 
 					if (tempString == "d")
+					{
 						tries = 6;
+						cout << "using 6" << endl;
+					}
 					else
 						tries = stoi(tempString);
 
 
 					if (tries < 2)
-						cout << "attempts should not be lower than 2" << endl;
+						cout << endl << "attempts cannot be lower than 2" << endl;
 
 				} while (tries < 2);
 
@@ -503,11 +519,11 @@ int main()
 				}
 
 				cout << endl;
-				multiplayer(playerCount, totalScore, pointsPerLetter, penaltyPoints, tries, wordChooserRewardPoints, players, wordChoosers);
+				multiplayer(playerCount, totalScore, pointsPerLetter, penaltyPoints, tries, players, wordChoosers);
 			}
 
 		}
 		else
-			cout << "Incorrect choice!" << endl;
+			cout << endl << "Incorrect choice!" << endl;
 	}
 }
